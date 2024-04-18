@@ -2,19 +2,14 @@ use serde::Deserialize;
 
 #[derive(Deserialize, Debug)]
 struct WeatherResponse {
-    main: Main,
-    wind: Wind,
+    current: Current,
 }
 
 #[derive(Deserialize, Debug)]
-struct Main {
-    temp: f32,
-    feels_like: f32,
-}
-
-#[derive(Deserialize, Debug)]
-struct Wind {
-    speed: f32,
+struct Current {
+    temp_c: f32,
+    wind_kph: f32,
+    feelslike_c: f32,
 }
 
 fn get_weather(city: &str) -> Result<WeatherResponse, reqwest::Error> {
@@ -25,6 +20,7 @@ fn get_weather(city: &str) -> Result<WeatherResponse, reqwest::Error> {
 }
 
 fn main() {
+    
     let args: Vec<String> = std::env::args().collect();
     if args.len() != 2 {
         println!("Usage: weather <CITY>");
@@ -32,12 +28,13 @@ fn main() {
     }
 
     let city = &args[1];
+
     match get_weather(city) {
         Ok(weather) => {
             println!("Weather in {}: ", city);
-            println!("Temperature: {}°C", weather.main.temp);
-            println!("Feels like: {}°C", weather.main.feels_like);
-            println!("Wind speed: {} m/s", weather.wind.speed);
+            println!("Temperature: {} °C", weather.current.temp_c);
+            println!("Feels like: {} °C", weather.current.feelslike_c);
+            println!("Wind speed: {} km/h", weather.current.wind_kph);
         }
         Err(err) => {
             eprintln!("Error: {}", err);
